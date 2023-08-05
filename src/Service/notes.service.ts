@@ -24,6 +24,7 @@ class NotesService {
   }
 
   async getNote(id: string) {
+    console.log("here");
     try {
       const note = await NoteModel.findById(id);
 
