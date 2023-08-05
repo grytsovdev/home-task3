@@ -108,3 +108,44 @@ export const unarchiveNote = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Failed to unarchive the note." });
   }
 };
+
+export const getNotesStats = async (req: Request, res: Response) => {
+  try {
+    const notes = await notesService.getNotes();
+
+    const notesCount = notes.length;
+    const archivedNotesCount = notes.filter((note) => note.archived).length;
+    const activeNotesCount = notesCount - archivedNotesCount;
+
+    const categories = ["Idea", "Random Thought", "Task"];
+    const categoryCount = {};
+    const activeCategotyCount = {};
+    const archivedCategoryCount = {};
+
+    categories.forEach((category) => {
+      const count = notes.filter((note) => note.category === category).length;
+      categoryCount[category] = count;
+
+      const archivedCount = notes.filter(
+        (note) => note.category === category && note.archived
+      ).length;
+
+      archivedCategoryCount[category] = archivedCount;
+
+      const activeCount = count - archivedCount;
+      activeCategotyCount[category] = activeCount;
+    });
+
+    const stats = {
+      notesCount,
+      activeNotesCount,
+      archivedNotesCount,
+      categoryCount,
+      activeCategotyCount,
+      archivedCategoryCount,
+    };
+    res.json(stats);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to get notes statistics." });
+  }
+};

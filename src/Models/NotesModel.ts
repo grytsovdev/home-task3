@@ -28,6 +28,7 @@ const notesSchema = new Schema<Note>(
       required: true,
       default: Date.now,
     },
+
     archived: {
       type: Boolean,
       required: true,

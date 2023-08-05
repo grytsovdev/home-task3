@@ -6,11 +6,13 @@ import {
   editNote,
   getNote,
   getNotes,
+  getNotesStats,
   unarchiveNote,
 } from "../Controllers/NotesController";
 import { validate } from "../Service/validation.service";
 export const router = express.Router();
 
+router.get("/notes/stats", getNotesStats);
 router.get("/notes", getNotes);
 
 router.post("/notes", validate, addNote);
