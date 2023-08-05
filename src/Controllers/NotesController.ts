@@ -1,31 +1,110 @@
 import { Request, Response } from "express";
-import { Note, noteValidationSchema } from "../Models/NotesModel";
+import { Note } from "../Models/NotesModel";
 import { notesService } from "../Service/notes.service";
 
 export const addNote = async (req: Request, res: Response) => {
-  const { error } = noteValidationSchema.validate(req.body);
-  if (error) {
-    return res.status(400).json({ error: error.details[0].message });
-  }
+  const { title, body, category, archived } = req.body;
 
   const newNote: Note = {
-    title: req.body.title,
-    body: req.body.body,
-    category: req.body.category,
+    title: title,
+    body: body,
+    category: category,
+    archived: archived,
   };
 
   try {
     const savedNote = await notesService.addNote(newNote);
+
     res.json(savedNote);
   } catch (error) {
     res.status(500).json({ error: "Failed to add note." });
   }
 };
+
 export const getNotes = async (req: Request, res: Response) => {
   try {
     const notes = await notesService.getNotes();
+
     res.json(notes);
   } catch (error) {
     res.status(500).json({ error: "Failed to get notes." });
+  }
+};
+
+export const getNote = async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  try {
+    const note = await notesService.getNote(id);
+    if (!note) {
+      return res.status(404).json({ error: "Note not found." });
+    }
+
+    res.json(note);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to get the note." });
+  }
+};
+
+export const deleteNote = async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  try {
+    const deletedNote = await notesService.deleteNoteById(id);
+    if (!deletedNote) {
+      return res.status(404).json({ error: "Note not found." });
+    }
+
+    res.json({ message: "Note deleted successfully." });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to delete the note." });
+  }
+};
+
+export const editNote = async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  try {
+    const { title, body, category, archived } = req.body;
+    const updatedNote = { title, body, category, archived };
+    const editedNote = await notesService.updateNote(id, updatedNote);
+
+    if (!editedNote) {
+      return res.status(404).json({ error: "Note not found." });
+    }
+
+    res.json(editedNote);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to edit the note." });
+  }
+};
+
+export const archiveNote = async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  try {
+    const archivedNote = await notesService.archiveNote(id);
+    if (!archivedNote) {
+      return res.status(404).json({ error: "Note not found." });
+    }
+
+    res.json({ message: "Note archived successfully." });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to archive the note." });
+  }
+};
+
+export const unarchiveNote = async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  try {
+    const archivedNote = await notesService.unarchiveNote(id);
+    if (!archivedNote) {
+      return res.status(404).json({ error: "Note not found." });
+    }
+
+    res.json({ message: "Note unarchived successfully." });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to unarchive the note." });
   }
 };
