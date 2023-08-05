@@ -4,35 +4,88 @@ class NotesService {
   async addNote(note: Note) {
     try {
       const newNote = await NoteModel.create(note);
+
       return newNote;
     } catch (error) {
       console.log(error);
+      throw new Error(error);
     }
   }
+
   async getNotes() {
     try {
       const notes = await NoteModel.find({});
+
       return notes;
     } catch (error) {
       console.log(error);
+      throw new Error(error);
     }
   }
+
   async getNote(id: string) {
     try {
-      const note = await NoteModel.findById({ _id: id });
-      if (!note) return "There is no note with such id";
+      const note = await NoteModel.findById(id);
+
       return note;
     } catch (error) {
       console.log(error);
+      throw new Error(error);
     }
   }
-  async deleteNote(id: string) {
+
+  async deleteNoteById(id: string) {
     try {
-      const note = await NoteModel.findByIdAndDelete(id);
-      if (!note) return "There is no note with such id";
-      return "Deleted succesfully";
+      const deletedNote = await NoteModel.findByIdAndDelete(id);
+
+      return deletedNote;
     } catch (error) {
       console.log(error);
+      throw new Error(error);
+    }
+  }
+  async updateNote(id: string, updatedNote: Note) {
+    try {
+      const newNote = await NoteModel.findByIdAndUpdate(id, updatedNote, {
+        new: true,
+      });
+
+      return newNote;
+    } catch (error) {
+      console.log(error);
+      throw new Error(error);
+    }
+  }
+  async archiveNote(id: string) {
+    try {
+      const newNote = await NoteModel.findByIdAndUpdate(
+        id,
+        { archived: true },
+        {
+          new: true,
+        }
+      );
+
+      return newNote;
+    } catch (error) {
+      console.log(error);
+      throw new Error(error);
+    }
+  }
+  async unarchiveNote(id: string) {
+    try {
+      const newNote = await NoteModel.findByIdAndUpdate(
+        id,
+        { archived: false },
+        {
+          new: true,
+        }
+      );
+
+      return newNote;
+    } catch (error) {
+      console.log(error);
+      throw new Error(error);
     }
   }
 }

@@ -1,4 +1,3 @@
-import Joi from "joi";
 import { Schema, model } from "mongoose";
 
 export interface Note {
@@ -6,23 +5,8 @@ export interface Note {
   body: string;
   category: string;
   createdDate?: Date;
+  archived: boolean;
 }
-
-const JoiInstance = Joi.defaults((schema) => {
-  return schema.options({
-    errors: {
-      wrap: {
-        label: false,
-      },
-    },
-  });
-});
-
-export const noteValidationSchema = JoiInstance.object({
-  title: Joi.string().required(),
-  body: Joi.string().required(),
-  category: Joi.string().valid("Idea", "Random Thought", "Task").required(),
-});
 
 const notesSchema = new Schema<Note>(
   {
@@ -43,6 +27,10 @@ const notesSchema = new Schema<Note>(
       type: Date,
       required: true,
       default: Date.now,
+    },
+    archived: {
+      type: Boolean,
+      required: true,
     },
   },
   { versionKey: false }
