@@ -1,0 +1,38 @@
+version: '3.9'
+
+services:
+  node_container:
+    container_name: node_notes
+    build:
+      dockerfile: Dockerfile
+      context: .
+    ports:
+      - '5050:5050'
+    environment:
+      PGDATABASE: notes_app
+      PGUSER: Ian
+      PGPASSWORD: 1234
+      PGHOST: db
+      PGPORT: 5432
+    volumes:
+      - .:/usr/src/app
+      - ./node_modules:/usr/src/app/node_modules
+    command: npm run start:dev
+
+    depends_on:
+      - db
+
+  db:
+    container_name: db
+    image: postgres
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_USER: Ian
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: notes_app
+    volumes:
+      - data:/var/lib/postgresql/data
+
+volumes:
+  data: {}
